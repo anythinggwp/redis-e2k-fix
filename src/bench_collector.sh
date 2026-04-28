@@ -11,7 +11,7 @@ for i in $(seq -w 1 "$RUNS"); do
 
     echo "Запуск $i/$RUNS -> $OUT_FILE"
 
-    redis-benchmark --csv > "$OUT_FILE"
+    ./redis-benchmark --csv > "$OUT_FILE"
 done
 
 echo "Готово. Результаты сохранены в: $OUT_DIR"
