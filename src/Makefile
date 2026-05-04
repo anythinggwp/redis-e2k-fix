@@ -474,6 +474,9 @@ DEP = $(REDIS_SERVER_OBJ:%.o=%.d) $(REDIS_VEC_SETS_OBJ:%.o=%.d) $(REDIS_CLI_OBJ:
 # Because the jemalloc.h header is generated as a part of the jemalloc build,
 # building it should complete before building any other object. Instead of
 # depending on a single artifact, build all dependencies first.
+siphash.o: siphash.c .make-prerequisites
+	$(REDIS_CC) -fmax-iter-for-ovlpeel=0 -MMD -o $@ -c $<
+	
 %.o: %.c .make-prerequisites
 	$(REDIS_CC) -MMD -o $@ -c $<
 
