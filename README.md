@@ -679,15 +679,26 @@ Tested with the following Docker images:
    ```
 
 6. Build Redis
+   6.2 Build Redis other
+      Enable the GCC toolset, set the necessary environment variables, and build Redis:
 
-   Enable the GCC toolset, set the necessary environment variables, and build Redis:
+      ```sh
+      source /etc/profile.d/gcc-toolset-13.sh
+      cd /usr/src/redis-<version>
+      export BUILD_TLS=yes BUILD_WITH_MODULES=yes INSTALL_RUST_TOOLCHAIN=yes DISABLE_WERRORS=yes
+      make -j "$(nproc)" all
+      ```
 
-   ```sh
-   source /etc/profile.d/gcc-toolset-13.sh
-   cd /usr/src/redis-<version>
-   export BUILD_TLS=yes BUILD_WITH_MODULES=yes INSTALL_RUST_TOOLCHAIN=yes DISABLE_WERRORS=yes
-   make -j "$(nproc)" all
-   ```
+   6.2 Build Redis e2k
+
+      Enable the GCC toolset, set the necessary environment variables, and build Redis:
+
+      ```sh
+      source /etc/profile.d/gcc-toolset-13.sh
+      cd /usr/src/redis-<version>
+      export BUILD_TLS=yes BUILD_WITH_MODULES=yes INSTALL_RUST_TOOLCHAIN=yes DISABLE_WERRORS=yes
+      make -j CFLAGS='-Wno-sign-compare' "$(nproc)" all
+      ```
 
 7. Run Redis
 
