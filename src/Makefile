@@ -32,12 +32,15 @@ ifeq ($(OPTIMIZATION),-O3)
 		OPTIMIZATION+=-flto=auto
 	endif
 endif
+
 ifneq ($(OPTIMIZATION),-O0)
 	OPTIMIZATION+=-fno-omit-frame-pointer
 endif
+
 ifeq ($(ARCH),e2k)
 	OPTIMIZATION+=-fwhole
 endif
+
 DEPENDENCY_TARGETS=hiredis linenoise lua hdr_histogram fpconv fast_float xxhash
 NODEPS:=clean distclean
 
