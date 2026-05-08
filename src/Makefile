@@ -38,7 +38,14 @@ ifneq ($(OPTIMIZATION),-O0)
 endif
 
 ifeq ($(ARCH),e2k)
-	OPTIMIZATION+=-fwhole
+  OPTIMIZATION += -fwhole
+  # Отключение флагов отладки, если используется -fwhole
+  ifneq ($(findstring -g,$(OPTIMIZATION)),$(EMPTY))
+    OPTIMIZATION := $(filter-out -g,$(OPTIMIZATION))
+  endif
+  ifneq ($(findstring -ggdb,$(OPTIMIZATION)),$(EMPTY))
+    OPTIMIZATION := $(filter-out -ggdb,$(OPTIMIZATION))
+  endif
 endif
 
 DEPENDENCY_TARGETS=hiredis linenoise lua hdr_histogram fpconv fast_float xxhash
