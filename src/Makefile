@@ -37,16 +37,16 @@ ifneq ($(OPTIMIZATION),-O0)
 	OPTIMIZATION+=-fno-omit-frame-pointer
 endif
 
-ifeq ($(ARCH),e2k)
-  OPTIMIZATION += -fwhole
-  # Отключение флагов отладки, если используется -fwhole
-  ifneq ($(findstring -g,$(OPTIMIZATION)),$(EMPTY))
-    OPTIMIZATION := $(filter-out -g,$(OPTIMIZATION))
-  endif
-  ifneq ($(findstring -ggdb,$(OPTIMIZATION)),$(EMPTY))
-    OPTIMIZATION := $(filter-out -ggdb,$(OPTIMIZATION))
-  endif
-endif
+# ifeq ($(ARCH),e2k)
+#   OPTIMIZATION += -fwhole
+#   # Отключение флагов отладки, если используется -fwhole
+#   ifneq ($(findstring -g,$(OPTIMIZATION)),$(EMPTY))
+#     OPTIMIZATION := $(filter-out -g,$(OPTIMIZATION))
+#   endif
+#   ifneq ($(findstring -ggdb,$(OPTIMIZATION)),$(EMPTY))
+#     OPTIMIZATION := $(filter-out -ggdb,$(OPTIMIZATION))
+#   endif
+# endif
 
 DEPENDENCY_TARGETS=hiredis linenoise lua hdr_histogram fpconv fast_float xxhash
 NODEPS:=clean distclean
@@ -163,7 +163,7 @@ endif
 FINAL_CFLAGS=$(STD) $(WARN) $(OPT) $(DEBUG) $(CFLAGS) $(REDIS_CFLAGS)
 FINAL_LDFLAGS=$(LDFLAGS) $(OPT) $(REDIS_LDFLAGS) $(DEBUG)
 FINAL_LIBS=-lm -lstdc++
-DEBUG=-g -ggdb
+# DEBUG=-g -ggdb
 
 # Linux ARM32 needs -latomic at linking time
 ifneq (,$(findstring armv,$(uname_M)))
@@ -489,11 +489,15 @@ DEP = $(REDIS_SERVER_OBJ:%.o=%.d) $(REDIS_VEC_SETS_OBJ:%.o=%.d) $(REDIS_CLI_OBJ:
 # depending on a single artifact, build all dependencies first.
 ifeq ($(ARCH),e2k)
 siphash.o: siphash.c .make-prerequisites
-	$(REDIS_CC) -fmax-iter-for-ovlpeel=0 -MMD -o $@ -c $<
-endif
-
+	$(REDIS_CC) -fPIE -fwhole-shared -fmax-iter-for-ovlpeel=0 -MMD -o $@ -c $<
+%.o: %.c .make-prerequisites
+	$(REDIS_CC) -fPIE -fwhole-shared -MMD -o $@ -c $<
+else
 %.o: %.c .make-prerequisites
 	$(REDIS_CC) -MMD -o $@ -c $<
+endif
+
+
 
 # The following files are checked in and don't normally need to be rebuilt. They
 # are built only if python is available and their prereqs are modified.
