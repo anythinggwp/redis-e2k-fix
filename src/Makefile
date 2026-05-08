@@ -20,7 +20,7 @@ release_hdr := $(shell sh -c './mkreleasehdr.sh')
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 uname_M := $(shell sh -c 'uname -m 2>/dev/null || echo not')
 CLANG := $(findstring clang,$(shell sh -c '$(CC) --version | head -1'))
-
+ARCH := $(shell uname -m)
 # Optimization flags. To override, the OPTIMIZATION variable can be passed, but
 # some automatic defaults are added to it. To specify optimization flags
 # explicitly without any defaults added, pass the OPT variable instead.
@@ -474,9 +474,11 @@ DEP = $(REDIS_SERVER_OBJ:%.o=%.d) $(REDIS_VEC_SETS_OBJ:%.o=%.d) $(REDIS_CLI_OBJ:
 # Because the jemalloc.h header is generated as a part of the jemalloc build,
 # building it should complete before building any other object. Instead of
 # depending on a single artifact, build all dependencies first.
+ifeq ($(ARCH),e2k)
 siphash.o: siphash.c .make-prerequisites
 	$(REDIS_CC) -fmax-iter-for-ovlpeel=0 -MMD -o $@ -c $<
-	
+endif
+
 %.o: %.c .make-prerequisites
 	$(REDIS_CC) -MMD -o $@ -c $<
 
